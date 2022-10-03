@@ -1,0 +1,27 @@
+--which album is popular in  USA, group by genre (assume: 1 album 1 genre)
+select 
+	genre, 
+	album , 
+	max(quant) "quantity(song)"
+from
+	(select 
+		gen.name genre,
+		alb.title album,
+		sum(invit.quantity) quant,
+		cus.country
+	from tracks tra
+	join invoice_items invit
+		on tra.trackid = invit.trackid
+	join genres gen
+		on gen.genreid = tra.genreid
+	join invoices inv
+		on inv.invoiceid = invit.invoiceid
+	join customers cus
+		on cus.customerid = inv.customerid
+	join albums alb
+		on alb.albumid = tra.albumid
+	where cus.country = 'USA'
+	group by 2
+	order by 3 DESC )
+group by 1
+order by 3 DESC;
