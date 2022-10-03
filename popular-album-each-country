@@ -1,0 +1,23 @@
+--which album is the most popular in each country
+select 
+	country,
+	album,
+	max(quant) "quantity(song)"
+from 
+	(select 
+		cus.country,
+		alb.title album,
+		sum(invit.quantity) quant
+	from tracks tra
+	join invoice_items invit
+	  on tra.trackid = invit.trackid
+	join invoices inv
+	  on inv.invoiceid = invit.invoiceid
+	join customers cus
+	  on cus.customerid = inv.customerid
+	join albums alb
+	  on alb.albumid = tra.albumid
+	group by 1, 2
+	order by 1, 2, 3 DESC)
+group by 1
+order by 1;
