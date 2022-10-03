@@ -1,0 +1,21 @@
+-- proportion of income , group by genre
+with tr as (select total from invoices),
+	   sales as (select 
+					      invit.InvoiceLineId,
+					      gen.name genre,
+					      invit.UnitPrice * invit.Quantity pq
+				      from invoices inv
+				      join invoice_items invit
+				       on invit.InvoiceId = inv.InvoiceId
+				      join tracks tra
+				       on tra.TrackId = invit.TrackId
+				      join genres gen
+				       on gen.GenreId = tra.GenreId
+				      group by 1)
+
+select 
+	genre,
+	round(sum(pq)*100/(select sum(total) from tr), 2) "proportion of income(%)"
+from sales
+group by 1
+order by 2 desc;
